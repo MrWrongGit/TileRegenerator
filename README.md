@@ -101,5 +101,7 @@ python.exe C:\TileRegenerator\src\tile2img.py C:\TileRegenerator\output\tilemap 
 
 执行该脚本，最终会重新生成layer_4.png。
 
-#### 
+### 美化注意事项
 
+1. 不要改变图片大小，否则会造成坐标系对不齐；
+2. 图片的原点在左下角，如果一定要改变图片大小，只能在图片的最上方和最右侧扩展或者收缩，一定不要切除或者扩展图片左边和底边。
