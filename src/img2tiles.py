@@ -48,6 +48,10 @@ def argParser():
     print("配置文件：",sys.argv[2])
     print("输出目录：",output_dir)
 
+def addAlphaChannel(img):
+    b_ch, g_ch, r_ch = cv2.split(img)
+    alpha_ch = np.ones(b_ch.shape, dtype=np.uint8)*255
+    return cv2.merge((b_ch, g_ch, r_ch, alpha_ch))
 
 # parse args
 argParser()
@@ -96,15 +100,16 @@ with open(config_file_path, 'r') as f:
                     start_h = 0
                 start_w = c * ROI_size
                 tile = img[start_h: end_h, start_w: start_w+ROI_size]
-
+                if tile.shape[2] < 4:
+                    tile = addAlphaChannel(tile)
                 # tile may not 512x512
                 # hight not enough, epand to 512
                 if tile.shape[0] < ROI_size:
-                    expand_h = np.zeros(shape=(ROI_size-tile.shape[0], tile.shape[1], 4), dtype=np.uint8)
+                    expand_h = np.zeros(shape=(ROI_size-tile.shape[0], tile.shape[1], tile.shape[2]), dtype=np.uint8)
                     tile = np.vstack((expand_h, tile)) # expand to top!!
                 # widht not enough, epand to 512
                 if tile.shape[1] < ROI_size:
-                    expand_w = np.zeros(shape=(tile.shape[0], ROI_size-tile.shape[1], 4), dtype=np.uint8)
+                    expand_w = np.zeros(shape=(tile.shape[0], ROI_size-tile.shape[1], tile.shape[2]), dtype=np.uint8)
                     tile = np.hstack((tile, expand_w)) # expand to right!
                 # down to 256 * 256
                 if ROI_size == 512:
