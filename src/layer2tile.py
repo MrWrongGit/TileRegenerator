@@ -53,6 +53,10 @@ def argParser():
     print("配置文件：",config_file_path)
     print("输出目录：",output_dir)
 
+def addAlphaChannel(img):
+    b_ch, g_ch, r_ch = cv2.split(img)
+    alpha_ch = np.ones(b_ch.shape, dtype=np.uint8)*255
+    return cv2.merge((b_ch, g_ch, r_ch, alpha_ch))
 
 # parse args
 argParser()
@@ -94,7 +98,8 @@ with open(config_file_path, 'r') as f:
                 start_h = 0
             start_w = c * 256
             tile = img[start_h: end_h, start_w: start_w+256]
-
+            if tile.shape[2] < 4:
+                tile = addAlphaChannel(tile)
             # tile may not 256x256
             # hight not enough, epand to 256
             if tile.shape[0] < 256:
